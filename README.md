@@ -52,3 +52,17 @@ distance (in the number of intervening sentences between the sentence containing
 Here we can clearly see how most of the SF instances (70-90% of all SFs for which we can find the description) actually have their
 location mention close to the sentence describing the SF itself. This might explain why the methods used by most teams to assign
 location, which is based on proximity to the sentences found to be triggering the SF, work pretty well.
+
+For completeness, Table 1 lists the number of all SFs, number of SFs which `description` field is non-empty and can be found in the
+document, and the number of SFs with location mention.
+
+|                        | IL5   | IL6   | IL9 | IL10 |
+|------------------------|------:|------:|----:|-----:|
+| #SFs                   | 1,564 | 1,146 | 354 | 390  |
+| #SFs with descriptions | 749   | 722   | 140 | 166  |
+| #SFs with place        | 693   | 608   | 129 | 112  |
+
+<p align="center">
+  <strong>Table 1.</strong> The statistics of the SFs used in this experiments. Some SFs do not have `description`s, and some of them are not found in the
+  document. Of these, a small portion of them do not have a location mention.
+</p>
