@@ -216,6 +216,16 @@ def main():
             sfs = json.load(infile)
     elif args.sf_anno:
         sfs = read_sf_annos(args.sf_anno)
+        for sf in sfs:
+            doc_id = sf.doc_id
+            doc = docs.get(doc_id, None)
+            if not doc:
+                continue
+            if sf.text is not None and sf.text != 'none':
+                for segment in doc.segments:
+                    if sf.text in segment.text:
+                        sf.seg_id = segment.seg_id
+                        break
     else:
         raise ValueError('Either --json_in or --sf_anno must be present')
 
