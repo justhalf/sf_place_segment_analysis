@@ -17,6 +17,54 @@ import json
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import math
+
+def add_value_labels(ax, spacing=3):
+    """Add labels to the end of each bar in a bar chart.
+
+    Taken from https://stackoverflow.com/questions/28931224/adding-value-labels-on-a-matplotlib-bar-chart
+
+    Arguments:
+        ax (matplotlib.axes.Axes): The matplotlib object containing the axes
+            of the plot to annotate.
+        spacing (int): The distance between the labels and the bars.
+    """
+
+    (y_bottom, y_top) = ax.get_ylim()
+    y_height = y_top - y_bottom
+    # For each bar: Place a label
+    for rect in ax.patches:
+        # Get X and Y placement of label from rect.
+        y_value = rect.get_height()
+        x_value = rect.get_x() + rect.get_width() / 2
+
+        # Number of points between bar and label. Change to your liking.
+        space = spacing
+        # if y_value / y_height > 0.95:
+        #     space = -1.25*space
+        # Vertical alignment for positive values
+        va = 'bottom'
+
+        # If value of bar is negative: Place label below bar
+        if y_value < 0:
+            # Invert space to place label below
+            space *= -1
+            # Vertically align label at top
+            va = 'top'
+
+        # Use Y value as label and format number with one decimal place
+        label = "{:.2f}".format(y_value)
+
+        # Create annotation
+        ax.annotate(
+            label,                      # Use `label` as label
+            (x_value, y_value),         # Place label at end of the bar
+            xytext=(0, space),          # Vertically shift label by `space`
+            textcoords="offset points", # Interpret `xytext` as offset in points
+            ha='center',                # Horizontally center label
+            va=va,                      # Vertically align label differently for
+                                        # positive and negative values.
+            fontsize=5)
 
 def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entities={}, mention_selection='closest',
                 outfile=sys.stdout, outpath=''):
@@ -80,6 +128,7 @@ def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entitie
     print('SFs with place: {}'.format(sf_with_place))
     diff_counts = {}
     total_diffs = 0
+    seg_loc_tup_count = {}
     for seg_num, loc_seg_num, num_segs in sf_to_loc:
         print('{},{},{}'.format(seg_num, loc_seg_num, num_segs), file=outfile)
         diff = abs(seg_num - loc_seg_num)
@@ -87,16 +136,43 @@ def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entitie
             diff_counts[diff] = 0
         diff_counts[diff] += 1
         total_diffs += 1
+        tup = (seg_num, loc_seg_num)
+        if tup not in seg_loc_tup_count:
+            seg_loc_tup_count[tup] = 0
+        seg_loc_tup_count[tup] += 1
+    tups, counts = zip(*seg_loc_tup_count.items())
+    seg_nums, loc_seg_nums = zip(*tups)
+    counts = [math.log(count) for count in counts]
 
+    # Plot SF vs Place
     figpath, ext = os.path.splitext(outpath)
-    figpath = '{}.pdf'.format(figpath)
-    plt.figure()
-    plt.plot(seg_num, loc_seg_num)
+    scatter_figpath = '{}.png'.format(figpath)
+    plt.figure(figsize=(5,5))
+    max_val = max([max(seg_nums), max(loc_seg_nums)])
+    max_val = max(max_val, 40)
+    plt.plot([-0.5, max_val+0.5], [-0.5, max_val+0.5], color='black', zorder=-1, alpha=0.5)
+    plt.scatter(seg_nums, loc_seg_nums)
+    # plt.scatter(seg_nums, loc_seg_nums, c=counts)
     plt.ylabel('Segment ID of the Place')
     plt.xlabel('Segment ID of the SF description')
-    plt.savefig(figpath)
-    for key, count in sorted(diff_counts.items()):
-        print('{}: {:.2f}%'.format(key, 100.0*count/total_diffs))
+    plt.tight_layout()
+    plt.savefig(scatter_figpath)
+
+    # Plot histogram of distance
+    hist_figpath = '{}_hist.png'.format(figpath)
+    dists, dist_counts = [], []
+    for dist, count in sorted(diff_counts.items()):
+        print('{}: {:.2f}%'.format(dist, 100.0*count/total_diffs))
+        dists.append(dist)
+        dist_counts.append(1.0*count/total_diffs)
+    fig = plt.figure(figsize=(6,4))
+    plt.bar(dists, dist_counts)
+    plt.ylabel('Ratio of Frequency')
+    plt.xlabel('Distance between SF description and SF Place')
+    plt.tight_layout()
+    ax = fig.axes[0]
+    add_value_labels(ax)
+    plt.savefig(hist_figpath)
 
 def create_span_to_entity_id(entities):
     result = {}
