@@ -16,5 +16,6 @@ for lang in "IL5" "IL6" "IL9" "IL10"; do
         --json_in ${lang}/setE/IL/sf_anno/gold_sf_IL.json \
         --mention_dir ${lang}/setE/IL/sf_anno/mentions \
         --out_file loc_stats_${lang}.log \
+        --lang ${lang} \
         ${ignore_doc_no_sf_opt}
 done

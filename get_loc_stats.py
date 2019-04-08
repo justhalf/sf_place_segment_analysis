@@ -67,7 +67,7 @@ def add_value_labels(ax, spacing=3):
             fontsize=5)
 
 def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entities={}, mention_selection='closest',
-                outfile=sys.stdout, outpath=''):
+                outfile=sys.stdout, outpath='', lang=''):
     if len(sfs) > 0 and not isinstance(sfs[0], SF):
         sfs = [SF.from_dict(sf) for sf in sfs]
     docs_by_ids = docs
@@ -155,6 +155,7 @@ def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entitie
     # plt.scatter(seg_nums, loc_seg_nums, c=counts)
     plt.ylabel('Segment ID of the Place')
     plt.xlabel('Segment ID of the SF description')
+    plt.title('SF trigger vs SF Place location ({})'.format(lang))
     plt.tight_layout()
     plt.savefig(scatter_figpath)
 
@@ -169,6 +170,7 @@ def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entitie
     plt.bar(dists, dist_counts)
     plt.ylabel('Ratio of Frequency')
     plt.xlabel('Distance between SF description and SF Place')
+    plt.title('Distribution of segment distances ({})'.format(lang))
     plt.tight_layout()
     ax = fig.axes[0]
     add_value_labels(ax)
@@ -199,6 +201,8 @@ def main():
     parser.add_argument('--ignore_doc_no_sf', action='store_true', help='To ignore documents without SFs')
     parser.add_argument('--mention_selection', choices=['original', 'closest'], default='closest',
                         help='How to select the mention associated with the SF Place when there are multiple mentions')
+    parser.add_argument('--lang',
+                        help='The language code')
     args = parser.parse_args()
 
     docs = read_ltf_files(args.ltf_dir, progress_bar=False, outtype='dict')
@@ -219,11 +223,11 @@ def main():
         with open(args.out_file, 'w') as outfile:
             print_stats(sfs, docs, args.ignore_doc_no_sf, span_to_entity_id=span_to_entity_id,
                         mention_selection=args.mention_selection, entities=entities, outfile=outfile,
-                        outpath=args.out_file)
+                        outpath=args.out_file, lang=args.lang)
     else:
         print_stats(sfs, docs, args.ignore_doc_no_sf, span_to_entity_id=span_to_entity_id,
                     mention_selection=args.mention_selection, entities=entities, outfile=outfile,
-                    outpath=args.out_file)
+                    outpath=args.out_file, lang=args.lang)
 
 if __name__ == '__main__':
     main()
