@@ -66,7 +66,7 @@ found in the document, and the number of SFs with location mention.
 
 |                        | IL5   | IL6   | IL9 | IL10 |
 |------------------------|------:|------:|----:|-----:|
-| #SFs                   | 1,564 | 1,146 | 354 | 390  |
+| #SFs                   | 1,581 | 1,146 | 354 | 390  |
 | #SFs with descriptions | 749   | 722   | 140 | 166  |
 | #SFs with place        | 693   | 608   | 129 | 112  |
 
@@ -80,3 +80,6 @@ loc\_stats\_IL{5,6,9,10}.log
 For example, from loc\_stats\_IL6.log we can see that the outlier points in IL6 plots in Figure 1 (seg\_num={1,6,10},
 loc\_seg\_num=37) comes from document ID IL6\_NW\_020411\_20160311\_H0040LSIF refers to the first mention of Oromiyaa
 in segment-37.
+
+All the code is also made available at this repository. Note that this repository does not store the data necessary to
+run the experiments. Check the comments at get\_loc\_stats.bash for more information.
