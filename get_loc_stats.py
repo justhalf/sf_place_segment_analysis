@@ -120,17 +120,21 @@ def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entitie
                     elif abs(seg_num - loc_seg_num) == abs(seg_num - loc_seg_nums[0]):
                         loc_seg_nums.append(loc_seg_num)
             else: # mention_selection == 'original'
-                loc_seg_nums = [get_segment(doc, start, end)]
+                segment = get_segment(doc, start, end)
+                if not segment:
+                    continue
+                loc_seg_num = int(segment.seg_id.split('-')[1])
+                loc_seg_nums = [loc_seg_num]
             for loc_seg_num in loc_seg_nums:
-                sf_to_loc.append((seg_num, loc_seg_num, len(doc.segments)))
+                sf_to_loc.append((doc_id, seg_num, loc_seg_num, len(doc.segments)))
     print('Total SFs: {}'.format(len(sfs)))
     print('SFs with segment ID: {}'.format(len(sfs) - sf_no_segment_count))
     print('SFs with place: {}'.format(sf_with_place))
     diff_counts = {}
     total_diffs = 0
     seg_loc_tup_count = {}
-    for seg_num, loc_seg_num, num_segs in sf_to_loc:
-        print('{},{},{}'.format(seg_num, loc_seg_num, num_segs), file=outfile)
+    for doc_id, seg_num, loc_seg_num, num_segs in sf_to_loc:
+        print('{},{},{},{}'.format(doc_id, seg_num, loc_seg_num, num_segs), file=outfile)
         diff = abs(seg_num - loc_seg_num)
         if diff not in diff_counts:
             diff_counts[diff] = 0
@@ -142,6 +146,7 @@ def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entitie
         seg_loc_tup_count[tup] += 1
     tups, counts = zip(*seg_loc_tup_count.items())
     seg_nums, loc_seg_nums = zip(*tups)
+    # Currently not used, to visualize how many data points per dot in the scatter plot
     counts = [math.log(count) for count in counts]
 
     # Plot SF vs Place
