@@ -160,7 +160,8 @@ def print_stats(sfs, docs, ignore_doc_no_sf=False, span_to_entity_id={}, entitie
     # plt.scatter(seg_nums, loc_seg_nums, c=counts)
     plt.ylabel('Segment ID of the Place')
     plt.xlabel('Segment ID of the SF description')
-    plt.title('SF trigger vs SF Place location ({})'.format(lang))
+    plt.title('SF trigger vs SF Place location ({}) (n={})'.format(lang, len(seg_nums)))
+    plt.grid()
     plt.tight_layout()
     plt.savefig(scatter_figpath)
 

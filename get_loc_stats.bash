@@ -16,9 +16,9 @@ for lang in "IL5" "IL6" "IL9" "IL10"; do
     echo "Language: ${lang}"
     echo "setE"
     python3 get_loc_stats.py \
-        --ltf_dir ../../data/${lang}/setE/IL/ltf \
-        --sf_anno ../../data/${lang}/setE/IL/sf_anno \
-        --mention_dir ../../data/${lang}/setE/IL/sf_anno/mentions \
+        --ltf_dir ../../data/langpacks/${lang}/setE/IL/ltf \
+        --sf_anno ../../data/langpacks/${lang}/setE/IL/sf_anno \
+        --mention_dir ../../data/langpacks/${lang}/setE/IL/sf_anno/mentions \
         --out_file loc_stats_${lang}.log \
         --lang ${lang} \
         ${ignore_doc_no_sf_opt}
